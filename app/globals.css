@@ -1055,12 +1055,7 @@
 
 /* Enhanced keyboard handling for mobile */
 @media screen and (max-width: 1023px) {
-  /* Smooth transition when keyboard appears/disappears */
-  .keyboard-aware-container {
-    transition: padding-bottom 0.2s ease-out;
-  }
-  
-  /* Ensure input stays visible when keyboard is open */
+  /* Chat input positioning when keyboard is visible */
   .keyboard-visible {
     position: fixed !important;
     bottom: 0 !important;
@@ -1071,45 +1066,73 @@
     backdrop-filter: blur(20px) !important;
     -webkit-backdrop-filter: blur(20px) !important;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
+    transform: translateY(0) !important;
+    transition: all 0.3s ease-out !important;
   }
   
   /* Messages container adjustments for keyboard */
+  .keyboard-aware-container {
+    transition: padding-bottom 0.3s ease-out;
+  }
+  
   .messages-keyboard-adjust {
-    transition: padding-bottom 0.2s ease-out;
+    transition: padding-bottom 0.3s ease-out;
   }
   
-  /* Better focus ring for mobile */
-  textarea:focus-visible {
-    outline: 2px solid hsl(var(--primary));
-    outline-offset: 2px;
+  /* Improved keyboard detection */
+  .input-focused-state {
+    position: relative;
   }
   
-  /* Improved touch targets */
-  .mobile-touch-target {
-    min-height: 48px;
-    min-width: 48px;
-    padding: 12px;
+  /* Better focus behavior */
+  textarea:focus {
+    outline: none !important;
+    border-color: hsl(var(--primary)) !important;
+    box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2) !important;
+  }
+  
+  /* Prevent zoom on input focus */
+  input, textarea, select {
+    font-size: 16px !important;
+    transform-origin: left top;
+    transition: transform 0.3s ease;
+  }
+  
+  /* Mobile scroll optimization when keyboard is visible */
+  .keyboard-visible-scroll {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
   }
 }
 
-/* iOS Safari specific improvements */
+/* iOS Safari specific keyboard handling */
 @supports (-webkit-touch-callout: none) {
   @media screen and (max-width: 1023px) {
     .keyboard-visible {
-      /* Use env() for better iOS support */
       padding-bottom: max(env(safe-area-inset-bottom), 20px) !important;
+      /* Use visual viewport for better iOS support */
+      bottom: env(keyboard-inset-height, 0px) !important;
     }
     
-    /* Fix for iOS viewport issues */
-    .ios-keyboard-fix {
+    /* iOS viewport height fix when keyboard appears */
+    .ios-keyboard-active {
       height: -webkit-fill-available;
+      min-height: -webkit-fill-available;
     }
   }
 }
 
-/* Android Chrome specific fixes */
+/* Android keyboard handling */
 @media screen and (max-width: 1023px) and (-webkit-min-device-pixel-ratio: 0) {
-  .android-keyboard-fix {
+  .android-keyboard-active {
     min-height: calc(var(--vh, 1vh) * 100);
+  }
+  
+  .keyboard-visible {
+    /* Ensure input stays above Android keyboard */
+    bottom: 0 !important;
+    position: fixed !important;
   }
 }

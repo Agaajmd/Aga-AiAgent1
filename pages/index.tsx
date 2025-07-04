@@ -145,115 +145,160 @@ function HomeContent() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [isSidebarOpen])
 
-  // Handle viewport height changes for mobile keyboard
+  // Enhanced keyboard detection for mobile
   useEffect(() => {
+    if (typeof window === 'undefined') return
+    
     let initialViewportHeight = window.innerHeight
+    let rafId: number | null = null
 
-    const handleViewportChange = () => {
+    const updateViewportHeight = () => {
       if (window.innerWidth < 1024) {
         const vh = window.innerHeight * 0.01
         document.documentElement.style.setProperty('--vh', `${vh}px`)
       }
     }
 
-    const handleKeyboardVisibility = () => {
+    const detectKeyboard = () => {
       if (window.innerWidth < 1024) {
-        const checkKeyboard = () => {
-          const currentHeight = window.innerHeight
-          const heightDifference = initialViewportHeight - currentHeight
+        const currentHeight = window.innerHeight
+        const heightDifference = initialViewportHeight - currentHeight
+        
+        // More sensitive keyboard detection (120px threshold)
+        const keyboardVisible = heightDifference > 120
+        
+        if (keyboardVisible !== isKeyboardVisible) {
+          setIsKeyboardVisible(keyboardVisible)
           
-          // If height decreased by more than 150px, keyboard is likely visible
-          const keyboardVisible = heightDifference > 150
-          
-          // Only update if state actually changed
-          if (keyboardVisible !== isKeyboardVisible) {
-            setIsKeyboardVisible(keyboardVisible)
+          // Add/remove body classes for CSS targeting
+          if (keyboardVisible) {
+            document.body.classList.add('keyboard-active')
+            document.documentElement.classList.add('keyboard-active')
+          } else {
+            document.body.classList.remove('keyboard-active')
+            document.documentElement.classList.remove('keyboard-active')
           }
-          
-          // Always update viewport height for accurate calculations
-          const vh = currentHeight * 0.01
-          document.documentElement.style.setProperty('--vh', `${vh}px`)
         }
-
-        const resizeListener = () => {
-          // Use requestAnimationFrame for better performance
-          requestAnimationFrame(checkKeyboard)
-        }
-
-        // Listen for visual viewport changes (better for mobile keyboards)
-        if (window.visualViewport) {
-          const visualViewportListener = () => {
-            const heightDifference = initialViewportHeight - (window.visualViewport?.height || window.innerHeight)
-            const keyboardVisible = heightDifference > 150
-            
-            if (keyboardVisible !== isKeyboardVisible) {
-              setIsKeyboardVisible(keyboardVisible)
-            }
-          }
-          
-          window.visualViewport.addEventListener('resize', visualViewportListener)
-          
-          return () => {
-            if (window.visualViewport) {
-              window.visualViewport.removeEventListener('resize', visualViewportListener)
-            }
-            window.removeEventListener('resize', resizeListener)
-          }
-        } else {
-          // Fallback for browsers without visualViewport
-          window.addEventListener('resize', resizeListener)
-          return () => window.removeEventListener('resize', resizeListener)
-        }
+        
+        updateViewportHeight()
       }
     }
 
-    // Initialize viewport height
-    handleViewportChange()
+    const debouncedDetectKeyboard = () => {
+      if (rafId) cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(detectKeyboard)
+    }
+
+    // Better keyboard detection using multiple events
+    const setupKeyboardDetection = () => {
+      if (window.innerWidth < 1024) {
+        // Use visualViewport API if available (better for mobile)
+        if (window.visualViewport) {
+          const visualViewportHandler = () => {
+            const heightDifference = initialViewportHeight - (window.visualViewport?.height || window.innerHeight)
+            const keyboardVisible = heightDifference > 120
+            
+            if (keyboardVisible !== isKeyboardVisible) {
+              setIsKeyboardVisible(keyboardVisible)
+              
+              if (keyboardVisible) {
+                document.body.classList.add('keyboard-active')
+                document.documentElement.classList.add('keyboard-active')
+              } else {
+                document.body.classList.remove('keyboard-active')
+                document.documentElement.classList.remove('keyboard-active')
+              }
+            }
+          }
+          
+          window.visualViewport.addEventListener('resize', visualViewportHandler)
+          return () => {
+            if (window.visualViewport) {
+              window.visualViewport.removeEventListener('resize', visualViewportHandler)
+            }
+          }
+        } else {
+          // Fallback for browsers without visualViewport
+          window.addEventListener('resize', debouncedDetectKeyboard)
+          return () => {
+            window.removeEventListener('resize', debouncedDetectKeyboard)
+            if (rafId) cancelAnimationFrame(rafId)
+          }
+        }
+      }
+      return () => {}
+    }
+
+    // Initialize
+    updateViewportHeight()
     initialViewportHeight = window.innerHeight
+    const cleanupKeyboard = setupKeyboardDetection()
     
-    const cleanupKeyboard = handleKeyboardVisibility()
-    
-    window.addEventListener('orientationchange', () => {
+    // Handle orientation changes
+    const handleOrientationChange = () => {
       setTimeout(() => {
         initialViewportHeight = window.innerHeight
-        handleViewportChange()
-      }, 500) // Wait for orientation change to complete
-    })
+        updateViewportHeight()
+        // Reset keyboard state on orientation change
+        setIsKeyboardVisible(false)
+        document.body.classList.remove('keyboard-active')
+        document.documentElement.classList.remove('keyboard-active')
+      }, 500)
+    }
+
+    window.addEventListener('orientationchange', handleOrientationChange)
 
     return () => {
-      window.removeEventListener('orientationchange', handleViewportChange)
+      window.removeEventListener('orientationchange', handleOrientationChange)
       if (cleanupKeyboard) cleanupKeyboard()
+      if (rafId) cancelAnimationFrame(rafId)
     }
   }, [isKeyboardVisible])
 
-  // Handle input focus for keyboard detection
+  // Enhanced input focus handling for immediate keyboard response
   const handleInputFocus = () => {
     if (window.innerWidth < 1024) {
-      // Set keyboard visible immediately for immediate UI response
+      // Immediately set keyboard visible for instant UI response
       setIsKeyboardVisible(true)
+      document.body.classList.add('keyboard-active', 'input-focused')
+      document.documentElement.classList.add('keyboard-active')
       
-      // Also scroll to bottom to ensure input is visible
+      // Scroll to input and ensure it's visible
       setTimeout(() => {
-        scrollToBottom()
-        
-        // Try to scroll the input into view if needed
         const chatInput = document.querySelector('textarea')
         if (chatInput) {
-          chatInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+          // Scroll chat container to bottom first
+          scrollToBottom()
+          
+          // Then ensure input is in view
+          setTimeout(() => {
+            chatInput.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'end',
+              inline: 'nearest'
+            })
+          }, 100)
         }
-      }, 100)
+      }, 50)
     }
   }
 
   const handleInputBlur = () => {
     if (window.innerWidth < 1024) {
-      // Small delay to allow for touch events to complete
+      // Small delay to handle touch events properly
       setTimeout(() => {
-        setIsKeyboardVisible(false)
-        // Reset viewport height
-        const vh = window.innerHeight * 0.01
-        document.documentElement.style.setProperty('--vh', `${vh}px`)
-      }, 100)
+        // Only hide keyboard if no other input is focused
+        const activeElement = document.activeElement
+        if (!activeElement || activeElement.tagName !== 'TEXTAREA') {
+          setIsKeyboardVisible(false)
+          document.body.classList.remove('keyboard-active', 'input-focused')
+          document.documentElement.classList.remove('keyboard-active')
+          
+          // Reset viewport height
+          const vh = window.innerHeight * 0.01
+          document.documentElement.style.setProperty('--vh', `${vh}px`)
+        }
+      }, 150)
     }
   }
 
@@ -438,12 +483,12 @@ function HomeContent() {
             </div>
           </div>
 
-          {/* Messages Container - With padding for fixed header and input on mobile */}
+          {/* Messages Container - With dynamic padding for keyboard */}
           <div 
             ref={chatContainerRef}
             className={`flex-1 overflow-y-auto overscroll-behavior-contain pt-[73px] lg:pt-0 transition-all duration-300 keyboard-aware-container messages-keyboard-adjust ${
               isKeyboardVisible 
-                ? 'pb-[80px]' // Reduced padding when keyboard is visible
+                ? 'pb-[60px]' // Minimal padding when keyboard is visible
                 : 'pb-[120px]' // Normal padding when keyboard is hidden
             } lg:pb-0`}
             style={{ 
@@ -480,9 +525,9 @@ function HomeContent() {
             </div>
           </div>
 
-          {/* Chat Input - FIXED position on mobile, static on desktop */}
-          <div className={`fixed bottom-0 left-0 right-0 lg:relative lg:bottom-auto lg:left-auto lg:right-auto bg-background/95 backdrop-blur-sm border-t border-border/30 safe-area-inset-bottom z-30 lg:z-auto transition-all duration-300 ${
-            isKeyboardVisible ? 'keyboard-visible' : ''
+          {/* Chat Input - FIXED position on mobile with keyboard handling */}
+          <div className={`fixed bottom-0 left-0 right-0 lg:relative lg:bottom-auto lg:left-auto lg:right-auto bg-background/98 backdrop-blur-xl border-t border-border/30 safe-area-inset-bottom z-30 lg:z-auto transition-all duration-300 ${
+            isKeyboardVisible ? 'keyboard-visible shadow-2xl' : 'lg:bg-background/95 lg:backdrop-blur-sm'
           }`}>
             <MessageRevealAnimation delay={300}>
               <ChatInput 
