@@ -276,15 +276,15 @@ function HomeContent() {
         </div>
 
         {/* Main Chat Container */}
-        <div className="flex-1 flex flex-col min-w-0 h-full relative">
-          {/* Mobile Header - Always visible on mobile */}
-          <div className="lg:hidden bg-background/95 backdrop-blur-sm border-b border-border/30 sticky top-0 z-30">
+        <div className="flex-1 flex flex-col lg:min-w-0 h-full relative">
+          {/* Mobile Header - FIXED position on mobile */}
+          <div className="fixed top-0 left-0 right-0 lg:relative lg:top-auto lg:left-auto lg:right-auto bg-background/95 backdrop-blur-sm border-b border-border/30 z-30 lg:z-auto lg:bg-background/95">
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">
                 <button
                   id="menu-button"
                   onClick={toggleSidebar}
-                  className="p-2 rounded-lg hover:bg-secondary/50 transition-colors touch-manipulation"
+                  className="lg:hidden p-2 rounded-lg hover:bg-secondary/50 transition-colors touch-manipulation"
                 >
                   <Menu className="w-5 h-5" />
                 </button>
@@ -310,7 +310,7 @@ function HomeContent() {
             </div>
           </div>
 
-          {/* Desktop Header - Minimal */}
+          {/* Desktop Header - Only for desktop */}
           <div className="hidden lg:block border-b border-border/30 bg-background/95 backdrop-blur-sm">
             <div className="px-6 py-4">
               <div className="flex items-center justify-between">
@@ -337,10 +337,10 @@ function HomeContent() {
             </div>
           </div>
 
-          {/* Messages Container - Mobile optimized with padding bottom for floating input */}
+          {/* Messages Container - With padding for fixed header and input on mobile */}
           <div 
             ref={chatContainerRef}
-            className="flex-1 overflow-y-auto overscroll-behavior-contain messages-with-floating-input lg:pb-0"
+            className="flex-1 overflow-y-auto overscroll-behavior-contain pt-[73px] pb-[120px] lg:pt-0 lg:pb-0"
             style={{ 
               WebkitOverflowScrolling: 'touch',
               scrollBehavior: 'smooth'
@@ -375,8 +375,8 @@ function HomeContent() {
             </div>
           </div>
 
-          {/* Chat Input - Fixed floating bottom on mobile, sticky on desktop */}
-          <div className="floating-chat-input lg:static lg:bottom-auto bg-background/95 backdrop-blur-sm border-t border-border/30 safe-area-inset-bottom z-40 lg:z-auto">
+          {/* Chat Input - FIXED position on mobile, static on desktop */}
+          <div className="fixed bottom-0 left-0 right-0 lg:relative lg:bottom-auto lg:left-auto lg:right-auto bg-background/95 backdrop-blur-sm border-t border-border/30 safe-area-inset-bottom z-30 lg:z-auto">
             <MessageRevealAnimation delay={300}>
               <ChatInput 
                 onSendMessage={sendMessage} 

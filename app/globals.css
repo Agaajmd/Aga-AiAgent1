@@ -781,32 +781,48 @@
   }
 }
 
-/* Mobile-First Optimizations */
+/* Mobile-First Optimizations - Fixed Navigation & Input */
 .safe-area-inset-bottom {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* iOS Safari keyboard handling */
-@supports (-webkit-touch-callout: none) {
-  .ios-keyboard-fix {
+/* Mobile viewport height fix */
+.mobile-viewport-height {
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
+}
+
+/* Fixed header and input spacing */
+@media screen and (max-width: 1023px) {
+  /* Ensure messages area doesn't overlap with fixed header/input */
+  .messages-container-mobile {
+    padding-top: 73px; /* Height of fixed header */
+    padding-bottom: 120px; /* Height of fixed input area */
+  }
+  
+  /* Fixed header on mobile */
+  .mobile-header-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    background: rgba(var(--background), 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(var(--border), 0.3);
+  }
+  
+  /* Fixed input on mobile */
+  .mobile-input-fixed {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-  }
-}
-
-/* Mobile viewport fixes */
-@media screen and (max-width: 768px) {
-  .mobile-viewport {
-    min-height: -webkit-fill-available;
-    min-height: fill-available;
-  }
-  
-  .mobile-scroll {
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
+    z-index: 30;
+    background: rgba(var(--background), 0.95);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid rgba(var(--border), 0.3);
+    padding-bottom: env(safe-area-inset-bottom);
   }
   
   /* Better touch targets */
@@ -818,6 +834,23 @@
   /* Prevent zoom on input focus */
   input, textarea, select {
     font-size: 16px !important;
+  }
+  
+  /* Mobile scroll optimization */
+  .mobile-scroll {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+}
+
+/* iOS Safari keyboard handling */
+@supports (-webkit-touch-callout: none) {
+  .ios-keyboard-fix {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
 }
 
@@ -856,14 +889,16 @@
   animation: slideInMessage 0.3s ease-out;
 }
 
-/* Floating action styles */
-.floating-action {
-  position: fixed;
-  bottom: 80px;
-  right: 16px;
-  z-index: 1000;
-  border-radius: 50%;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+/* Floating action styles - Updated for fixed positioning */
+@media (max-width: 1023px) {
+  .floating-action {
+    position: fixed;
+    bottom: 140px; /* Above the fixed input */
+    right: 16px;
+    z-index: 1000;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
 }
 
 @media (min-width: 1024px) {
@@ -880,25 +915,6 @@
 @media (max-width: 768px) {
   ::-webkit-scrollbar {
     width: 2px;
-  }
-}
-
-/* Focus improvements for mobile */
-.focus-visible:focus {
-  outline: 2px solid hsl(var(--primary));
-  outline-offset: 2px;
-}
-
-/* Message bubble improvements */
-.message-bubble {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
-}
-
-@media (max-width: 640px) {
-  .message-bubble {
-    max-width: calc(100vw - 80px);
   }
 }
 
