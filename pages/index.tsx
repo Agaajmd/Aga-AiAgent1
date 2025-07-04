@@ -144,6 +144,25 @@ function HomeContent() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [isSidebarOpen])
 
+  // Handle viewport height changes for mobile keyboard
+  useEffect(() => {
+    const handleViewportChange = () => {
+      if (window.innerWidth < 1024) {
+        const vh = window.innerHeight * 0.01
+        document.documentElement.style.setProperty('--vh', `${vh}px`)
+      }
+    }
+
+    handleViewportChange()
+    window.addEventListener('resize', handleViewportChange)
+    window.addEventListener('orientationchange', handleViewportChange)
+
+    return () => {
+      window.removeEventListener('resize', handleViewportChange)
+      window.removeEventListener('orientationchange', handleViewportChange)
+    }
+  }, [])
+
   return (
     <>
       <Head>
@@ -165,7 +184,7 @@ function HomeContent() {
       </Head>
 
       {/* Mobile-First Layout */}
-      <div className="flex h-screen bg-background relative overflow-hidden">
+      <div className="flex h-screen mobile-viewport-height bg-background relative overflow-hidden">
         {/* Mobile Sidebar Overlay */}
         {isSidebarOpen && (
           <div 
@@ -257,7 +276,7 @@ function HomeContent() {
         </div>
 
         {/* Main Chat Container */}
-        <div className="flex-1 flex flex-col min-w-0 h-full">
+        <div className="flex-1 flex flex-col min-w-0 h-full relative">
           {/* Mobile Header - Always visible on mobile */}
           <div className="lg:hidden bg-background/95 backdrop-blur-sm border-b border-border/30 sticky top-0 z-30">
             <div className="flex items-center justify-between p-4">
@@ -318,10 +337,10 @@ function HomeContent() {
             </div>
           </div>
 
-          {/* Messages Container - Mobile optimized */}
+          {/* Messages Container - Mobile optimized with padding bottom for floating input */}
           <div 
             ref={chatContainerRef}
-            className="flex-1 overflow-y-auto overscroll-behavior-contain"
+            className="flex-1 overflow-y-auto overscroll-behavior-contain messages-with-floating-input lg:pb-0"
             style={{ 
               WebkitOverflowScrolling: 'touch',
               scrollBehavior: 'smooth'
@@ -330,7 +349,7 @@ function HomeContent() {
             <div className="min-h-full">
               {messages.length === 0 ? (
                 <MessageRevealAnimation delay={200}>
-                  <div className="flex items-center justify-center p-4 min-h-[calc(100vh-200px)]">
+                  <div className="flex items-center justify-center p-4 min-h-[calc(100vh-280px)] lg:min-h-[calc(100vh-200px)]">
                     <EmptyState onExampleClick={handleExampleClick} />
                   </div>
                 </MessageRevealAnimation>
@@ -356,8 +375,8 @@ function HomeContent() {
             </div>
           </div>
 
-          {/* Chat Input - Sticky bottom, keyboard safe */}
-          <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-t border-border/30 safe-area-inset-bottom">
+          {/* Chat Input - Fixed floating bottom on mobile, sticky on desktop */}
+          <div className="floating-chat-input lg:static lg:bottom-auto bg-background/95 backdrop-blur-sm border-t border-border/30 safe-area-inset-bottom z-40 lg:z-auto">
             <MessageRevealAnimation delay={300}>
               <ChatInput 
                 onSendMessage={sendMessage} 

@@ -901,3 +901,133 @@
     max-width: calc(100vw - 80px);
   }
 }
+
+/* Floating Input Optimizations */
+.floating-input-mobile {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+@media (min-width: 1024px) {
+  .floating-input-mobile {
+    position: static;
+    z-index: auto;
+  }
+}
+
+/* iOS Safari bottom bar handling */
+@supports (-webkit-touch-callout: none) {
+  .floating-input-mobile {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Ensure proper spacing for floating input */
+.messages-container-mobile {
+  padding-bottom: 80px;
+}
+
+@media (min-width: 1024px) {
+  .messages-container-mobile {
+    padding-bottom: 0;
+  }
+}
+
+/* Keyboard handling improvements */
+@media screen and (max-height: 600px) {
+  .floating-input-mobile {
+    position: fixed;
+    bottom: 0;
+  }
+  
+  .messages-container-mobile {
+    padding-bottom: 100px;
+  }
+}
+
+/* Backdrop blur for floating input */
+.floating-input-backdrop {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(var(--background-rgb), 0.95);
+  border-top: 1px solid rgba(var(--border-rgb), 0.3);
+}
+
+/* Smooth transitions for floating state */
+.floating-input-transition {
+  transition: all 0.3s ease;
+  transform: translateY(0);
+}
+
+.floating-input-transition.keyboard-open {
+  transform: translateY(-20px);
+}
+
+/* Dynamic viewport height for mobile */
+:root {
+  --vh: 1vh;
+}
+
+@media screen and (max-width: 1023px) {
+  .mobile-viewport-height {
+    height: calc(var(--vh, 1vh) * 100);
+    min-height: calc(var(--vh, 1vh) * 100);
+  }
+  
+  .mobile-content-height {
+    height: calc(var(--vh, 1vh) * 100 - 80px); /* Subtract input height */
+  }
+}
+
+/* Enhanced floating input for better mobile experience */
+@media screen and (max-width: 1023px) {
+  .floating-chat-input {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: rgba(var(--background), 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid hsl(var(--border) / 0.3);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Messages padding to prevent overlap with floating input */
+@media screen and (max-width: 1023px) {
+  .messages-with-floating-input {
+    padding-bottom: 100px; /* Enough space for input */
+  }
+}
+
+/* Keyboard safe area */
+@supports (padding: max(0px)) {
+  .floating-chat-input {
+    padding-bottom: max(env(safe-area-inset-bottom), 16px);
+  }
+}
+
+/* Focus state improvements for mobile */
+@media screen and (max-width: 1023px) {
+  .mobile-input-focus {
+    position: relative;
+    z-index: 60;
+  }
+  
+  .mobile-input-focus::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.1);
+    z-index: -1;
+    pointer-events: none;
+  }
+}

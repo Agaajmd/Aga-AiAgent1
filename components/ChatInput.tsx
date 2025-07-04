@@ -64,10 +64,10 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, disable
       />
       
       <div className="bg-background border-t border-border/30 sticky bottom-0 backdrop-blur-sm bg-background/80">
-      <div className="bg-background/95 backdrop-blur-sm">
-        <div className="p-3 md:p-4">
+      <div className="bg-background/95 backdrop-blur-sm lg:bg-background/95 lg:backdrop-blur-sm">
+        <div className="p-3 md:p-4 max-w-4xl mx-auto">
           <form onSubmit={handleSubmit} className="relative">
-            <div className={`relative flex items-end bg-background rounded-2xl border transition-all duration-300 ${
+            <div className={`relative flex items-end bg-background rounded-2xl border transition-all duration-300 shadow-lg lg:shadow-sm ${
               isFocused 
                 ? 'border-primary shadow-lg shadow-primary/10' 
                 : 'border-border'
@@ -93,7 +93,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, disable
                   disabled={!isMessageValid || isLoading || disabled}
                   className={`rounded-xl p-2.5 md:p-3 transition-all duration-300 touch-manipulation ${
                     isMessageValid && !isLoading && !disabled
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95'
+                      ? 'bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 shadow-md'
                       : 'bg-muted/50 text-muted-foreground cursor-not-allowed'
                   }`}
                 >
