@@ -144,6 +144,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   console.log("📝 Processing message:", message.substring(0, 100) + (message.length > 100 ? "..." : ""))
 
   try {
+    // Check if Groq API key is available
+    const groqApiKey = process.env.GROQ_API_KEY
+    
+    if (!groqApiKey) {
+      console.warn("⚠️ GROQ_API_KEY not found, using fallback response")
+      throw new Error("API key not configured")
+    }
+
     // Try Groq API first (Llama model)
     console.log("🚀 Sending request to Groq API...")
     
@@ -151,7 +159,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer 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"
+        "Authorization": `Bearer ${groqApiKey}`
       },
       body: JSON.stringify({
         model: "meta-llama/llama-4-scout-17b-16e-instruct",

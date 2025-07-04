@@ -90,11 +90,18 @@ const generateSmartResponse = (prompt: string): string => {
 // Try to use Hugging Face API with a simple, reliable model
 async function tryHuggingFaceAPI(prompt: string): Promise<string | null> {
   try {
+    const hfApiKey = process.env.HUGGING_FACE_API_KEY
+    
+    if (!hfApiKey) {
+      console.warn("⚠️ HUGGING_FACE_API_KEY not found")
+      return null
+    }
+    
     // Using GPT-2, which is one of the most reliable models on Hugging Face
     const response = await fetch("https://api-inference.huggingface.co/models/gpt2", {
       method: "POST",
       headers: {
-        Authorization: "Bearer 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",
+        Authorization: `Bearer ${hfApiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
