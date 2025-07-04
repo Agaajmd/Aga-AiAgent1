@@ -138,40 +138,36 @@ function HomeContent() {
         <meta name="apple-mobile-web-app-title" content="AI Agent Aga" />
       </Head>
 
-      <div className="flex flex-col h-screen bg-gradient-to-br from-pink via-mint/30 to-teal/20 transition-all duration-500 overflow-hidden mobile-first">
-        {/* Enhanced Header with mobile optimization */}
+      <div className="flex flex-col h-screen bg-background transition-all duration-500 overflow-hidden">
+        {/* Header */}
         <MessageRevealAnimation delay={0}>
           <Header onClearChat={clearMessages} messageCount={messages.length} />
         </MessageRevealAnimation>
 
-        {/* Messages Area with enhanced mobile scrolling */}
+        {/* Messages Area */}
         <div 
           ref={chatContainerRef}
-          className="flex-1 overflow-y-auto relative bg-gradient-to-b from-pink/50 to-mint/20 mobile-scroll"
+          className="flex-1 overflow-y-auto relative"
           style={{ 
             WebkitOverflowScrolling: 'touch',
             scrollBehavior: 'smooth'
           }}
         >
-          {/* Enhanced background pattern - Mobile optimized */}
-          <div className="absolute inset-0 opacity-[0.02] sm:opacity-[0.03] bg-gradient-to-br from-teal/30 via-transparent to-mint/30 pointer-events-none"></div>
-          <div className="absolute inset-0 opacity-[0.005] sm:opacity-[0.01] bg-[radial-gradient(circle_at_1px_1px,_rgba(86,223,207,0.3)_1px,_transparent_0)] [background-size:15px_15px] sm:[background-size:20px_20px] pointer-events-none"></div>
-          
-          {/* Content container with mobile padding */}
-          <div className="relative px-4 mobile-px">
+          {/* Content container */}
+          <div className="relative px-4">
             {messages.length === 0 ? (
               <MessageRevealAnimation delay={200}>
                 <EmptyState onExampleClick={handleExampleClick} />
               </MessageRevealAnimation>
             ) : (
-              <div className="space-y-3 py-4 sm:py-6 mobile-py">
+              <div className="space-y-3 py-4">
                 {messages.map((message, index) => (
                   <MessageRevealAnimation key={message.id} delay={index * 50}>
                     <ChatMessage message={message} index={index} />
                   </MessageRevealAnimation>
                 ))}
                 
-                {/* Enhanced typing indicator */}
+                {/* Typing indicator */}
                 {isLoading && (
                   <MessageRevealAnimation delay={0}>
                     <TypingIndicator />
@@ -180,12 +176,12 @@ function HomeContent() {
               </div>
             )}
             
-            {/* Scroll anchor with mobile spacing */}
-            <div ref={messagesEndRef} className="h-6" />
+            {/* Scroll anchor */}
+            <div ref={messagesEndRef} className="h-4" />
           </div>
         </div>
 
-        {/* Enhanced Chat Input */}
+        {/* Chat Input */}
         <MessageRevealAnimation delay={300}>
           <ChatInput 
             onSendMessage={sendMessage} 
