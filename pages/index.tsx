@@ -22,6 +22,7 @@ function HomeContent() {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const { addToast } = useToast()
@@ -146,6 +147,8 @@ function HomeContent() {
 
   // Handle viewport height changes for mobile keyboard
   useEffect(() => {
+    let initialViewportHeight = window.innerHeight
+
     const handleViewportChange = () => {
       if (window.innerWidth < 1024) {
         const vh = window.innerHeight * 0.01
@@ -153,15 +156,106 @@ function HomeContent() {
       }
     }
 
+    const handleKeyboardVisibility = () => {
+      if (window.innerWidth < 1024) {
+        const checkKeyboard = () => {
+          const currentHeight = window.innerHeight
+          const heightDifference = initialViewportHeight - currentHeight
+          
+          // If height decreased by more than 150px, keyboard is likely visible
+          const keyboardVisible = heightDifference > 150
+          
+          // Only update if state actually changed
+          if (keyboardVisible !== isKeyboardVisible) {
+            setIsKeyboardVisible(keyboardVisible)
+          }
+          
+          // Always update viewport height for accurate calculations
+          const vh = currentHeight * 0.01
+          document.documentElement.style.setProperty('--vh', `${vh}px`)
+        }
+
+        const resizeListener = () => {
+          // Use requestAnimationFrame for better performance
+          requestAnimationFrame(checkKeyboard)
+        }
+
+        // Listen for visual viewport changes (better for mobile keyboards)
+        if (window.visualViewport) {
+          const visualViewportListener = () => {
+            const heightDifference = initialViewportHeight - (window.visualViewport?.height || window.innerHeight)
+            const keyboardVisible = heightDifference > 150
+            
+            if (keyboardVisible !== isKeyboardVisible) {
+              setIsKeyboardVisible(keyboardVisible)
+            }
+          }
+          
+          window.visualViewport.addEventListener('resize', visualViewportListener)
+          
+          return () => {
+            if (window.visualViewport) {
+              window.visualViewport.removeEventListener('resize', visualViewportListener)
+            }
+            window.removeEventListener('resize', resizeListener)
+          }
+        } else {
+          // Fallback for browsers without visualViewport
+          window.addEventListener('resize', resizeListener)
+          return () => window.removeEventListener('resize', resizeListener)
+        }
+      }
+    }
+
+    // Initialize viewport height
     handleViewportChange()
-    window.addEventListener('resize', handleViewportChange)
-    window.addEventListener('orientationchange', handleViewportChange)
+    initialViewportHeight = window.innerHeight
+    
+    const cleanupKeyboard = handleKeyboardVisibility()
+    
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        initialViewportHeight = window.innerHeight
+        handleViewportChange()
+      }, 500) // Wait for orientation change to complete
+    })
 
     return () => {
-      window.removeEventListener('resize', handleViewportChange)
       window.removeEventListener('orientationchange', handleViewportChange)
+      if (cleanupKeyboard) cleanupKeyboard()
     }
-  }, [])
+  }, [isKeyboardVisible])
+
+  // Handle input focus for keyboard detection
+  const handleInputFocus = () => {
+    if (window.innerWidth < 1024) {
+      // Set keyboard visible immediately for immediate UI response
+      setIsKeyboardVisible(true)
+      
+      // Also scroll to bottom to ensure input is visible
+      setTimeout(() => {
+        scrollToBottom()
+        
+        // Try to scroll the input into view if needed
+        const chatInput = document.querySelector('textarea')
+        if (chatInput) {
+          chatInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+        }
+      }, 100)
+    }
+  }
+
+  const handleInputBlur = () => {
+    if (window.innerWidth < 1024) {
+      // Small delay to allow for touch events to complete
+      setTimeout(() => {
+        setIsKeyboardVisible(false)
+        // Reset viewport height
+        const vh = window.innerHeight * 0.01
+        document.documentElement.style.setProperty('--vh', `${vh}px`)
+      }, 100)
+    }
+  }
 
   return (
     <>
@@ -261,11 +355,14 @@ function HomeContent() {
           {/* Sidebar Footer */}
           <div className="p-4 border-t border-border/30 space-y-3">
             <div className="flex items-center justify-between">
-              <ThemeToggle />
+              {/* Theme Toggle only on Desktop */}
+              <div className="hidden lg:block">
+                <ThemeToggle />
+              </div>
               {messages.length > 0 && (
                 <button
                   onClick={clearMessages}
-                  className="flex items-center gap-1 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground bg-secondary/50 hover:bg-secondary rounded-lg transition-colors"
+                  className="flex items-center gap-1 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground bg-secondary/50 hover:bg-secondary rounded-lg transition-colors ml-auto"
                 >
                   <RotateCcw className="w-3 h-3" />
                   Hapus Chat
@@ -298,6 +395,10 @@ function HomeContent() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                {/* Theme Toggle on Mobile */}
+                <div className="lg:hidden">
+                  <ThemeToggle />
+                </div>
                 {messages.length > 0 && (
                   <button
                     onClick={clearMessages}
@@ -340,7 +441,11 @@ function HomeContent() {
           {/* Messages Container - With padding for fixed header and input on mobile */}
           <div 
             ref={chatContainerRef}
-            className="flex-1 overflow-y-auto overscroll-behavior-contain pt-[73px] pb-[120px] lg:pt-0 lg:pb-0"
+            className={`flex-1 overflow-y-auto overscroll-behavior-contain pt-[73px] lg:pt-0 transition-all duration-300 keyboard-aware-container messages-keyboard-adjust ${
+              isKeyboardVisible 
+                ? 'pb-[80px]' // Reduced padding when keyboard is visible
+                : 'pb-[120px]' // Normal padding when keyboard is hidden
+            } lg:pb-0`}
             style={{ 
               WebkitOverflowScrolling: 'touch',
               scrollBehavior: 'smooth'
@@ -376,12 +481,16 @@ function HomeContent() {
           </div>
 
           {/* Chat Input - FIXED position on mobile, static on desktop */}
-          <div className="fixed bottom-0 left-0 right-0 lg:relative lg:bottom-auto lg:left-auto lg:right-auto bg-background/95 backdrop-blur-sm border-t border-border/30 safe-area-inset-bottom z-30 lg:z-auto">
+          <div className={`fixed bottom-0 left-0 right-0 lg:relative lg:bottom-auto lg:left-auto lg:right-auto bg-background/95 backdrop-blur-sm border-t border-border/30 safe-area-inset-bottom z-30 lg:z-auto transition-all duration-300 ${
+            isKeyboardVisible ? 'keyboard-visible' : ''
+          }`}>
             <MessageRevealAnimation delay={300}>
               <ChatInput 
                 onSendMessage={sendMessage} 
                 isLoading={isLoading}
                 disabled={false}
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
               />
             </MessageRevealAnimation>
           </div>

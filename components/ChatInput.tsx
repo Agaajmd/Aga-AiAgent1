@@ -9,15 +9,29 @@ interface ChatInputProps {
   onSendMessage: (message: string) => void
   isLoading: boolean
   disabled?: boolean
+  onFocus?: () => void
+  onBlur?: () => void
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, disabled = false }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, disabled = false, onFocus, onBlur }) => {
   const [message, setMessage] = useState("")
   const [isFocused, setIsFocused] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
   const [showPlane, setShowPlane] = useState(false)
   const [lastSentMessage, setLastSentMessage] = useState("")
+  const [isMobile, setIsMobile] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Detect if user is on mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,6 +52,35 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, disable
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
       handleSubmit(e)
+    }
+  }
+
+  const handleFocus = () => {
+    setIsFocused(true)
+    
+    // Call parent onFocus handler for keyboard detection
+    if (onFocus) {
+      onFocus()
+    }
+    
+    // On mobile, ensure the input is properly positioned
+    if (isMobile && textareaRef.current) {
+      // Small delay to let the keyboard animation start
+      setTimeout(() => {
+        textareaRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest'
+        })
+      }, 100)
+    }
+  }
+
+  const handleBlur = () => {
+    setIsFocused(false)
+    
+    // Call parent onBlur handler for keyboard detection
+    if (onBlur) {
+      onBlur()
     }
   }
 
@@ -64,7 +107,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, disable
       />
       
       <div className="bg-background border-t border-border/30 sticky bottom-0 backdrop-blur-sm bg-background/80">
-      <div className="bg-background/95 backdrop-blur-sm lg:bg-background/95 lg:backdrop-blur-sm">
+      <div className={`bg-background/95 backdrop-blur-sm lg:bg-background/95 lg:backdrop-blur-sm ${
+        isFocused && isMobile ? 'keyboard-visible' : ''
+      }`}>
         <div className="p-3 md:p-4 max-w-4xl mx-auto">
           <form onSubmit={handleSubmit} className="relative">
             <div className={`relative flex items-end bg-background rounded-2xl border transition-all duration-300 shadow-lg lg:shadow-sm ${
@@ -77,11 +122,13 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, disable
                 value={message}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
                 placeholder="Ketik pesan Anda..."
                 disabled={disabled}
-                className="flex-1 resize-none border-0 bg-transparent px-4 py-3 md:py-4 text-base placeholder:text-muted-foreground focus:outline-none focus:ring-0 min-h-[48px] max-h-[120px] rounded-2xl"
+                className={`flex-1 resize-none border-0 bg-transparent px-4 py-3 md:py-4 text-base placeholder:text-muted-foreground focus:outline-none focus:ring-0 min-h-[48px] max-h-[120px] rounded-2xl ${
+                  isMobile ? 'mobile-touch-target' : ''
+                }`}
                 rows={1}
                 maxLength={1000}
               />
