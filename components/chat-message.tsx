@@ -54,45 +54,39 @@ export function ChatMessage({ message, index = 0 }: ChatMessageProps) {
   }
 
   return (
-    <div className={`group flex w-full ${isUser ? 'justify-end' : 'justify-start'} mb-4 animate-fade-in px-2 sm:px-0`}>
-      <div className={`flex ${isUser ? 'flex-row-reverse' : 'flex-row'} gap-3 max-w-[85%] sm:max-w-[80%] lg:max-w-[70%]`}>
-        {/* Avatar - Mobile optimized */}
-        <div className="flex-shrink-0">
-          <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${
-            isUser 
-              ? 'bg-gradient-to-br from-teal to-mint text-white' 
-              : message.isError
-                ? 'bg-gradient-to-br from-red-500 to-red-600 text-white'
-                : 'bg-gradient-to-br from-teal to-mint text-white'
-          }`}>
-            {isUser ? (
-              <User className="w-4 h-4 sm:w-5 sm:h-5" />
-            ) : (
-              <Bot className="w-4 h-4 sm:w-5 sm:h-5" />
-            )}
-          </div>
-          {/* Status indicator */}
-          {!isUser && !message.isError && (
-            <div className="w-2 h-2 bg-teal rounded-full mt-1 ml-6 sm:ml-7 animate-pulse"></div>
-          )}
-        </div>
-
-        {/* Message content - Mobile responsive */}
-        <div className="flex flex-col min-w-0 flex-1">
-          <div className={`rounded-2xl px-4 py-3 shadow-md backdrop-blur-sm border transition-all duration-300 mobile-message ${
-            isUser
-              ? 'bg-gradient-to-br from-teal to-mint text-white border-teal/20' 
-              : message.isError
-                ? 'bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800'
-                : 'bg-gradient-to-br from-pink/80 to-mint/10 text-foreground border-mint/30 hover:border-teal/30'
-          }`}>
-            
-            {/* Message text with mobile typography */}
-            <div className="prose prose-sm sm:prose-base max-w-none text-inherit leading-relaxed">
+    <div className={`w-full ${isUser ? 'bg-secondary/20' : 'bg-background'} transition-colors`}>
+      <div className="max-w-3xl mx-auto px-4 py-6">
+        <div className="flex gap-4">
+          {/* Avatar */}
+          <div className="flex-shrink-0">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+              isUser 
+                ? 'bg-primary text-primary-foreground' 
+                : message.isError
+                  ? 'bg-destructive text-destructive-foreground'
+                  : 'bg-secondary text-secondary-foreground'
+            }`}>
               {isUser ? (
-                <p className="text-base font-medium m-0">{message.content}</p>
+                <User className="w-5 h-5" />
               ) : (
-                <div className="text-base">
+                <Bot className="w-5 h-5" />
+              )}
+            </div>
+          </div>
+
+          {/* Message content */}
+          <div className="flex-1 min-w-0">
+            {/* Sender name */}
+            <div className="text-sm font-medium text-foreground mb-2">
+              {isUser ? 'Anda' : 'AI Agent Aga'}
+            </div>
+            
+            {/* Message text */}
+            <div className="prose prose-gray max-w-none dark:prose-invert">
+              {isUser ? (
+                <p className="text-foreground m-0 leading-relaxed">{message.content}</p>
+              ) : (
+                <div className={`text-foreground leading-relaxed ${message.isError ? 'text-destructive' : ''}`}>
                   <TypewriterText 
                     text={message.content} 
                     speed={25} 
@@ -102,50 +96,41 @@ export function ChatMessage({ message, index = 0 }: ChatMessageProps) {
               )}
             </div>
 
-            {/* Message actions - Mobile touch friendly */}
+            {/* Message actions */}
             {!isUser && !message.isError && (
-              <div className="flex items-center gap-2 mt-3 pt-2 border-t border-mint/20">
+              <div className="flex items-center gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={copyToClipboard}
-                  className="h-8 px-3 text-sm text-muted-foreground hover:text-teal transition-all duration-200 hover:bg-teal/10 touch-manipulation active:scale-95 rounded-lg mobile-touch"
+                  className="h-8 px-2 text-muted-foreground hover:text-foreground"
                 >
                   {copied ? (
                     <Check className="w-4 h-4 text-green-500" />
                   ) : (
                     <Copy className="w-4 h-4" />
                   )}
-                  <span className="ml-1 hidden sm:inline">{copied ? 'Tersalin!' : 'Salin'}</span>
                 </Button>
                 
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleLike}
-                  className={`h-8 px-3 text-sm transition-all duration-200 hover:bg-teal/10 touch-manipulation active:scale-95 rounded-lg mobile-touch ${
+                  className={`h-8 px-2 ${
                     liked 
                       ? 'text-red-500 hover:text-red-600' 
-                      : 'text-muted-foreground hover:text-teal'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  <Heart className={`w-4 h-4 transition-all duration-200 ${liked ? 'fill-current scale-110' : ''}`} />
-                  <span className="ml-1 hidden sm:inline">{liked ? 'Disukai' : 'Suka'}</span>
+                  <Heart className={`w-4 h-4 ${liked ? 'fill-current' : ''}`} />
                 </Button>
               </div>
             )}
-          </div>
 
-          {/* Timestamp - Mobile friendly */}
-          <div className={`text-xs text-muted-foreground/70 mt-2 px-1 ${isUser ? 'text-right' : 'text-left'}`}>
-            {formatTime(message.timestamp)}
-            {!isUser && (
-              <span className="ml-2 inline-flex items-center gap-1 opacity-60">
-                <Sparkles className="w-2.5 h-2.5 text-teal" />
-                <span className="hidden sm:inline">AI Agent Aga</span>
-                <span className="sm:hidden">Aga</span>
-              </span>
-            )}
+            {/* Timestamp */}
+            <div className="text-xs text-muted-foreground mt-2">
+              {formatTime(message.timestamp)}
+            </div>
           </div>
         </div>
       </div>

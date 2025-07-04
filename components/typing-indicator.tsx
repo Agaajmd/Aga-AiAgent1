@@ -3,25 +3,30 @@ import { Bot, Sparkles, Zap } from "lucide-react"
 
 export function TypingIndicator() {
   return (
-    <div className="flex justify-start mb-4 px-2 sm:px-0">
-      <div className="flex gap-3 max-w-[85%] sm:max-w-[80%]">
-        {/* Avatar */}
-        <div className="flex-shrink-0">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-teal to-mint flex items-center justify-center text-white shadow-md animate-pulse">
-            <Bot className="w-4 h-4 sm:w-5 sm:h-5" />
+    <div className="w-full bg-background">
+      <div className="max-w-3xl mx-auto px-4 py-6">
+        <div className="flex gap-4">
+          {/* Avatar */}
+          <div className="flex-shrink-0">
+            <div className="w-10 h-10 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center animate-pulse">
+              <Bot className="w-5 h-5" />
+            </div>
           </div>
-        </div>
 
-        {/* Typing bubble */}
-        <div className="bg-gradient-to-br from-pink/80 to-mint/10 rounded-2xl px-4 py-3 border border-mint/30 shadow-md backdrop-blur-sm animate-pulse mobile-message">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-teal/70 rounded-full animate-mobile-bounce" style={{ animationDelay: '0s' }}></div>
-            <div className="w-2 h-2 bg-teal/70 rounded-full animate-mobile-bounce" style={{ animationDelay: '0.2s' }}></div>
-            <div className="w-2 h-2 bg-teal/70 rounded-full animate-mobile-bounce" style={{ animationDelay: '0.4s' }}></div>
-            <span className="ml-2 text-sm text-muted-foreground font-medium animate-pulse">
-              Aga sedang mengetik...
-            </span>
-            <Sparkles className="w-3 h-3 text-teal animate-pulse ml-1" />
+          {/* Typing content */}
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-medium text-foreground mb-2">
+              AI Agent Aga
+            </div>
+            
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="flex gap-1">
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+              </div>
+              <span className="text-sm">sedang mengetik...</span>
+            </div>
           </div>
         </div>
       </div>
