@@ -55,12 +55,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, disable
   }, [message])
 
   const isMessageValid = message.trim().length > 0 && message.length <= 1000
-  const quickSuggestions = [
-    "Halo Aga! 👋",
-    "Jelaskan tentang AI",
-    "Apa yang bisa kamu lakukan?",
-    "Ceritakan hal menarik"
-  ]
 
   return (
     <>
@@ -72,23 +66,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, disable
       <div className="bg-background border-t border-border/30 sticky bottom-0 backdrop-blur-sm bg-background/80">
       <div className="bg-background/95 backdrop-blur-sm">
         <div className="p-3 md:p-4">
-          {/* Quick suggestions - Only show when empty and not mobile to save space */}
-          {message.length === 0 && !isLoading && (
-            <div className="mb-3 hidden md:block">
-              <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-                {quickSuggestions.slice(0, 4).map((suggestion, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setMessage(suggestion)}
-                    className="px-3 py-2 text-sm bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-foreground rounded-full transition-all duration-200 border border-border/30"
-                  >
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="relative">
             <div className={`relative flex items-end bg-background rounded-2xl border transition-all duration-300 ${
               isFocused 
@@ -150,23 +127,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, disable
                 <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
               </div>
               <span>Aga sedang mengetik...</span>
-            </div>
-          )}
-
-          {/* Quick suggestions for mobile - when input is empty */}
-          {message.length === 0 && !isLoading && (
-            <div className="mt-3 md:hidden">
-              <div className="flex flex-wrap gap-2">
-                {quickSuggestions.slice(0, 3).map((suggestion, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setMessage(suggestion)}
-                    className="px-3 py-2 text-xs bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-foreground rounded-full transition-all duration-200 border border-border/30 touch-manipulation"
-                  >
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
             </div>
           )}
         </div>
