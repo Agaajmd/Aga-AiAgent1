@@ -70,11 +70,11 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, disable
       />
       
       <div className="bg-background border-t border-border/30 sticky bottom-0 backdrop-blur-sm bg-background/80">
-      <div className="p-4 lg:p-6">
-        <div className="max-w-3xl mx-auto">
-          {/* Quick suggestions - Only show when empty */}
+      <div className="bg-background/95 backdrop-blur-sm">
+        <div className="p-3 md:p-4">
+          {/* Quick suggestions - Only show when empty and not mobile to save space */}
           {message.length === 0 && !isLoading && (
-            <div className="mb-4">
+            <div className="mb-3 hidden md:block">
               <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
                 {quickSuggestions.slice(0, 4).map((suggestion, index) => (
                   <button
@@ -92,8 +92,8 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, disable
           <form onSubmit={handleSubmit} className="relative">
             <div className={`relative flex items-end bg-background rounded-2xl border transition-all duration-300 ${
               isFocused 
-                ? 'border-primary shadow-lg shadow-primary/20' 
-                : 'border-border shadow-sm'
+                ? 'border-primary shadow-lg shadow-primary/10' 
+                : 'border-border'
             }`}>
               <textarea
                 ref={textareaRef}
@@ -102,9 +102,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, disable
                 onKeyDown={handleKeyDown}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
-                placeholder="Tanyakan apa saja kepada Aga..."
+                placeholder="Ketik pesan Anda..."
                 disabled={disabled}
-                className="flex-1 resize-none border-0 bg-transparent px-4 py-4 text-base placeholder:text-muted-foreground focus:outline-none focus:ring-0 min-h-[56px] max-h-[120px] rounded-2xl"
+                className="flex-1 resize-none border-0 bg-transparent px-4 py-3 md:py-4 text-base placeholder:text-muted-foreground focus:outline-none focus:ring-0 min-h-[48px] max-h-[120px] rounded-2xl"
                 rows={1}
                 maxLength={1000}
               />
@@ -114,9 +114,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, disable
                 <button
                   type="submit"
                   disabled={!isMessageValid || isLoading || disabled}
-                  className={`rounded-xl p-2 transition-all duration-300 ${
+                  className={`rounded-xl p-2.5 md:p-3 transition-all duration-300 touch-manipulation ${
                     isMessageValid && !isLoading && !disabled
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-105'
+                      ? 'bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95'
                       : 'bg-muted/50 text-muted-foreground cursor-not-allowed'
                   }`}
                 >
@@ -129,10 +129,10 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, disable
               </div>
             </div>
             
-            {/* Character counter */}
-            {message.length > 700 && (
+            {/* Character counter - Only show when approaching limit */}
+            {message.length > 800 && (
               <div className={`absolute -bottom-6 right-0 text-xs ${
-                message.length > 900 
+                message.length > 950 
                   ? 'text-destructive' 
                   : 'text-muted-foreground'
               }`}>
@@ -153,10 +153,20 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, disable
             </div>
           )}
 
-          {/* Character limit warning */}
-          {message.length > 900 && (
-            <div className="mt-2 text-sm text-destructive">
-              {1000 - message.length} karakter tersisa
+          {/* Quick suggestions for mobile - when input is empty */}
+          {message.length === 0 && !isLoading && (
+            <div className="mt-3 md:hidden">
+              <div className="flex flex-wrap gap-2">
+                {quickSuggestions.slice(0, 3).map((suggestion, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setMessage(suggestion)}
+                    className="px-3 py-2 text-xs bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-foreground rounded-full transition-all duration-200 border border-border/30 touch-manipulation"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>

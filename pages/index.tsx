@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import Head from "next/head"
-import { MessageSquare, RotateCcw } from "lucide-react"
+import { MessageSquare, RotateCcw, Menu, X, Plus } from "lucide-react"
 import { ChatMessage } from "../components/chat-message"
 import ChatInput from "../components/ChatInput"
 import Header from "../components/Header"
@@ -21,6 +21,7 @@ interface Message {
 function HomeContent() {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const { addToast } = useToast()
@@ -110,6 +111,7 @@ function HomeContent() {
 
   const clearMessages = () => {
     setMessages([])
+    setIsSidebarOpen(false) // Close sidebar on mobile after clearing
     addToast({
       type: "info",
       message: "Percakapan dibersihkan 🧹",
@@ -118,7 +120,29 @@ function HomeContent() {
 
   const handleExampleClick = (question: string) => {
     sendMessage(question)
+    setIsSidebarOpen(false) // Close sidebar on mobile after selecting
   }
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen)
+  }
+
+  // Close sidebar when clicking outside on mobile
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isSidebarOpen && window.innerWidth < 1024) {
+        const sidebar = document.getElementById('mobile-sidebar')
+        const menuButton = document.getElementById('menu-button')
+        if (sidebar && !sidebar.contains(event.target as Node) && 
+            menuButton && !menuButton.contains(event.target as Node)) {
+          setIsSidebarOpen(false)
+        }
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isSidebarOpen])
 
   return (
     <>
@@ -140,12 +164,28 @@ function HomeContent() {
         <meta name="apple-mobile-web-app-title" content="AI Agent Aga" />
       </Head>
 
-      {/* Main Layout Container */}
-      <div className="flex h-screen bg-background">
-        {/* Sidebar - Desktop Only */}
-        <div className="hidden lg:flex lg:w-64 xl:w-80 flex-col border-r border-border/50 bg-background/50">
+      {/* Mobile-First Layout */}
+      <div className="flex h-screen bg-background relative overflow-hidden">
+        {/* Mobile Sidebar Overlay */}
+        {isSidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 lg:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
+        {/* Sidebar - Hidden on mobile, slide-in when open */}
+        <div 
+          id="mobile-sidebar"
+          className={`
+            fixed left-0 top-0 h-full w-80 bg-background border-r border-border/50 z-50 
+            transform transition-transform duration-300 ease-in-out
+            lg:static lg:translate-x-0 lg:z-auto lg:w-64 xl:w-80
+            ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          `}
+        >
           {/* Sidebar Header */}
-          <div className="p-4 border-b border-border/30">
+          <div className="flex items-center justify-between p-4 border-b border-border/30">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-r from-primary to-primary/80 rounded-lg flex items-center justify-center">
                 <MessageSquare className="w-4 h-4 text-primary-foreground" />
@@ -155,26 +195,44 @@ function HomeContent() {
                 <p className="text-xs text-muted-foreground">Asisten AI Indonesia</p>
               </div>
             </div>
+            {/* Close button for mobile */}
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              className="lg:hidden p-2 rounded-lg hover:bg-secondary/50 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
           
           {/* Sidebar Content */}
-          <div className="flex-1 p-4">
-            <div className="space-y-2">
-              <button className="w-full flex items-center gap-2 p-3 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors">
-                <MessageSquare className="w-4 h-4" />
-                <span className="text-sm">Chat Baru</span>
-              </button>
-            </div>
+          <div className="flex-1 p-4 overflow-y-auto">
+            {/* New Chat Button */}
+            <button 
+              onClick={clearMessages}
+              className="w-full flex items-center gap-2 p-3 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors mb-4"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="text-sm font-medium">Chat Baru</span>
+            </button>
             
-            {/* Chat History Placeholder */}
-            <div className="mt-6">
-              <h3 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wider">
+            {/* Chat History */}
+            <div className="space-y-3">
+              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Riwayat Chat
               </h3>
-              <div className="space-y-1">
-                {messages.length > 0 && (
-                  <div className="p-2 rounded-md bg-secondary/30 text-sm text-muted-foreground">
-                    Chat saat ini ({messages.length} pesan)
+              <div className="space-y-2">
+                {messages.length > 0 ? (
+                  <div className="p-3 rounded-lg bg-secondary/30 border border-border/30">
+                    <div className="text-sm text-foreground font-medium mb-1">
+                      Chat Aktif
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {messages.length} pesan • {new Date().toLocaleDateString('id-ID')}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-sm text-muted-foreground p-3 text-center">
+                    Belum ada riwayat chat
                   </div>
                 )}
               </div>
@@ -182,33 +240,59 @@ function HomeContent() {
           </div>
           
           {/* Sidebar Footer */}
-          <div className="p-4 border-t border-border/30">
+          <div className="p-4 border-t border-border/30 space-y-3">
             <div className="flex items-center justify-between">
               <ThemeToggle />
               {messages.length > 0 && (
                 <button
                   onClick={clearMessages}
-                  className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground bg-secondary/50 hover:bg-secondary rounded-md transition-colors"
+                  className="flex items-center gap-1 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground bg-secondary/50 hover:bg-secondary rounded-lg transition-colors"
                 >
                   <RotateCcw className="w-3 h-3" />
-                  Clear
+                  Hapus Chat
                 </button>
               )}
             </div>
           </div>
         </div>
 
-        {/* Main Chat Area */}
-        <div className="flex-1 flex flex-col min-w-0">
-          {/* Mobile Header */}
-          <div className="lg:hidden">
-            <MessageRevealAnimation delay={0}>
-              <Header onClearChat={clearMessages} messageCount={messages.length} />
-            </MessageRevealAnimation>
+        {/* Main Chat Container */}
+        <div className="flex-1 flex flex-col min-w-0 h-full">
+          {/* Mobile Header - Always visible on mobile */}
+          <div className="lg:hidden bg-background/95 backdrop-blur-sm border-b border-border/30 sticky top-0 z-30">
+            <div className="flex items-center justify-between p-4">
+              <div className="flex items-center gap-3">
+                <button
+                  id="menu-button"
+                  onClick={toggleSidebar}
+                  className="p-2 rounded-lg hover:bg-secondary/50 transition-colors touch-manipulation"
+                >
+                  <Menu className="w-5 h-5" />
+                </button>
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 bg-gradient-to-r from-primary to-primary/80 rounded-lg flex items-center justify-center">
+                    <MessageSquare className="w-4 h-4 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <h1 className="font-semibold text-foreground text-sm">AI Agent Aga</h1>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {messages.length > 0 && (
+                  <button
+                    onClick={clearMessages}
+                    className="p-2 rounded-lg hover:bg-secondary/50 transition-colors touch-manipulation"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Desktop Header - Minimal */}
-          <div className="hidden lg:block border-b border-border/30 bg-background/80 backdrop-blur-sm">
+          <div className="hidden lg:block border-b border-border/30 bg-background/95 backdrop-blur-sm">
             <div className="px-6 py-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -234,62 +318,53 @@ function HomeContent() {
             </div>
           </div>
 
-          {/* Messages Container */}
+          {/* Messages Container - Mobile optimized */}
           <div 
             ref={chatContainerRef}
-            className="flex-1 overflow-y-auto"
+            className="flex-1 overflow-y-auto overscroll-behavior-contain"
             style={{ 
               WebkitOverflowScrolling: 'touch',
               scrollBehavior: 'smooth'
             }}
           >
-            {/* Messages Content */}
-            <div className="max-w-4xl mx-auto">
+            <div className="min-h-full">
               {messages.length === 0 ? (
                 <MessageRevealAnimation delay={200}>
-                  <div className="h-full flex items-center justify-center px-4 py-8">
+                  <div className="flex items-center justify-center p-4 min-h-[calc(100vh-200px)]">
                     <EmptyState onExampleClick={handleExampleClick} />
                   </div>
                 </MessageRevealAnimation>
               ) : (
-                <div className="px-4 lg:px-6">
-                  <div className="space-y-6 py-6">
-                    {messages.map((message, index) => (
-                      <MessageRevealAnimation key={message.id} delay={index * 50}>
-                        <div className="max-w-3xl mx-auto">
-                          <ChatMessage message={message} index={index} />
-                        </div>
-                      </MessageRevealAnimation>
-                    ))}
-                    
-                    {/* Typing indicator */}
-                    {isLoading && (
-                      <MessageRevealAnimation delay={0}>
-                        <div className="max-w-3xl mx-auto">
-                          <TypingIndicator />
-                        </div>
-                      </MessageRevealAnimation>
-                    )}
-                  </div>
+                <div className="pb-4">
+                  {messages.map((message, index) => (
+                    <MessageRevealAnimation key={message.id} delay={index * 50}>
+                      <ChatMessage message={message} index={index} />
+                    </MessageRevealAnimation>
+                  ))}
+                  
+                  {/* Typing indicator */}
+                  {isLoading && (
+                    <MessageRevealAnimation delay={0}>
+                      <TypingIndicator />
+                    </MessageRevealAnimation>
+                  )}
                 </div>
               )}
               
               {/* Scroll anchor */}
-              <div ref={messagesEndRef} className="h-4" />
+              <div ref={messagesEndRef} className="h-1" />
             </div>
           </div>
 
-          {/* Chat Input Area */}
-          <div className="border-t border-border/30 bg-background/80 backdrop-blur-sm">
-            <div className="max-w-4xl mx-auto">
-              <MessageRevealAnimation delay={300}>
-                <ChatInput 
-                  onSendMessage={sendMessage} 
-                  isLoading={isLoading}
-                  disabled={false}
-                />
-              </MessageRevealAnimation>
-            </div>
+          {/* Chat Input - Sticky bottom, keyboard safe */}
+          <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-t border-border/30 safe-area-inset-bottom">
+            <MessageRevealAnimation delay={300}>
+              <ChatInput 
+                onSendMessage={sendMessage} 
+                isLoading={isLoading}
+                disabled={false}
+              />
+            </MessageRevealAnimation>
           </div>
         </div>
       </div>

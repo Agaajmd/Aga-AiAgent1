@@ -54,12 +54,12 @@ export function ChatMessage({ message, index = 0 }: ChatMessageProps) {
   }
 
   return (
-    <div className={`w-full ${isUser ? 'bg-secondary/20' : 'bg-background'} transition-colors`}>
-      <div className="max-w-3xl mx-auto px-4 py-6">
-        <div className="flex gap-4">
+    <div className={`w-full ${isUser ? 'bg-secondary/10' : 'bg-background'} transition-colors group`}>
+      <div className="px-4 py-4 md:px-6 md:py-6 max-w-4xl mx-auto">
+        <div className="flex gap-3 md:gap-4">
           {/* Avatar */}
           <div className="flex-shrink-0">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+            <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center ${
               isUser 
                 ? 'bg-primary text-primary-foreground' 
                 : message.isError
@@ -67,9 +67,9 @@ export function ChatMessage({ message, index = 0 }: ChatMessageProps) {
                   : 'bg-secondary text-secondary-foreground'
             }`}>
               {isUser ? (
-                <User className="w-5 h-5" />
+                <User className="w-4 h-4 md:w-5 md:h-5" />
               ) : (
-                <Bot className="w-5 h-5" />
+                <Bot className="w-4 h-4 md:w-5 md:h-5" />
               )}
             </div>
           </div>
@@ -82,11 +82,11 @@ export function ChatMessage({ message, index = 0 }: ChatMessageProps) {
             </div>
             
             {/* Message text */}
-            <div className="prose prose-gray max-w-none dark:prose-invert">
+            <div className="prose prose-sm md:prose-base prose-gray max-w-none dark:prose-invert">
               {isUser ? (
-                <p className="text-foreground m-0 leading-relaxed">{message.content}</p>
+                <p className="text-foreground m-0 leading-relaxed break-words">{message.content}</p>
               ) : (
-                <div className={`text-foreground leading-relaxed ${message.isError ? 'text-destructive' : ''}`}>
+                <div className={`text-foreground leading-relaxed break-words ${message.isError ? 'text-destructive' : ''}`}>
                   <TypewriterText 
                     text={message.content} 
                     speed={25} 
@@ -96,34 +96,32 @@ export function ChatMessage({ message, index = 0 }: ChatMessageProps) {
               )}
             </div>
 
-            {/* Message actions */}
+            {/* Message actions - Mobile optimized */}
             {!isUser && !message.isError && (
-              <div className="flex items-center gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button
-                  variant="ghost"
-                  size="sm"
+              <div className="flex items-center gap-1 mt-3 opacity-0 group-hover:opacity-100 md:group-hover:opacity-100 transition-opacity">
+                <button
                   onClick={copyToClipboard}
-                  className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                  className="flex items-center gap-1 px-2 py-1.5 md:px-3 md:py-2 text-xs md:text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50 rounded-lg transition-colors touch-manipulation"
                 >
                   {copied ? (
-                    <Check className="w-4 h-4 text-green-500" />
+                    <Check className="w-3 h-3 md:w-4 md:h-4 text-green-500" />
                   ) : (
-                    <Copy className="w-4 h-4" />
+                    <Copy className="w-3 h-3 md:w-4 md:h-4" />
                   )}
-                </Button>
+                  <span className="hidden md:inline">{copied ? 'Tersalin!' : 'Salin'}</span>
+                </button>
                 
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <button
                   onClick={handleLike}
-                  className={`h-8 px-2 ${
+                  className={`flex items-center gap-1 px-2 py-1.5 md:px-3 md:py-2 text-xs md:text-sm hover:bg-secondary/50 rounded-lg transition-colors touch-manipulation ${
                     liked 
                       ? 'text-red-500 hover:text-red-600' 
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  <Heart className={`w-4 h-4 ${liked ? 'fill-current' : ''}`} />
-                </Button>
+                  <Heart className={`w-3 h-3 md:w-4 md:h-4 ${liked ? 'fill-current' : ''}`} />
+                  <span className="hidden md:inline">{liked ? 'Disukai' : 'Suka'}</span>
+                </button>
               </div>
             )}
 
