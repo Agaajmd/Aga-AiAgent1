@@ -263,42 +263,53 @@ function HomeContent() {
       document.body.classList.add('keyboard-active', 'input-focused')
       document.documentElement.classList.add('keyboard-active')
       
-      // Scroll to input and ensure it's visible
+      // Prevent body scrolling when keyboard appears
+      document.body.style.position = 'fixed'
+      document.body.style.width = '100%'
+      document.body.style.top = '0'
+      
+      // Ensure proper viewport height
+      const vh = window.innerHeight * 0.01
+      document.documentElement.style.setProperty('--vh', `${vh}px`)
+      
+      // Scroll to bottom and ensure input visibility
       setTimeout(() => {
+        scrollToBottom()
+        
         const chatInput = document.querySelector('textarea')
         if (chatInput) {
-          // Scroll chat container to bottom first
-          scrollToBottom()
-          
-          // Then ensure input is in view
-          setTimeout(() => {
-            chatInput.scrollIntoView({ 
-              behavior: 'smooth', 
-              block: 'end',
-              inline: 'nearest'
-            })
-          }, 100)
+          // Ensure input is in view
+          chatInput.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'end',
+            inline: 'nearest'
+          })
         }
-      }, 50)
+      }, 100)
     }
   }
 
   const handleInputBlur = () => {
     if (window.innerWidth < 1024) {
-      // Small delay to handle touch events properly
+      // Delay to handle touch events properly
       setTimeout(() => {
-        // Only hide keyboard if no other input is focused
+        // Check if any input is still focused
         const activeElement = document.activeElement
-        if (!activeElement || activeElement.tagName !== 'TEXTAREA') {
+        if (!activeElement || (activeElement.tagName !== 'TEXTAREA' && activeElement.tagName !== 'INPUT')) {
           setIsKeyboardVisible(false)
           document.body.classList.remove('keyboard-active', 'input-focused')
           document.documentElement.classList.remove('keyboard-active')
+          
+          // Restore body scrolling
+          document.body.style.position = ''
+          document.body.style.width = ''
+          document.body.style.top = ''
           
           // Reset viewport height
           const vh = window.innerHeight * 0.01
           document.documentElement.style.setProperty('--vh', `${vh}px`)
         }
-      }, 150)
+      }, 200)
     }
   }
 
@@ -525,9 +536,9 @@ function HomeContent() {
             </div>
           </div>
 
-          {/* Chat Input - FIXED position on mobile with keyboard handling */}
-          <div className={`fixed bottom-0 left-0 right-0 lg:relative lg:bottom-auto lg:left-auto lg:right-auto bg-background/98 backdrop-blur-xl border-t border-border/30 safe-area-inset-bottom z-30 lg:z-auto transition-all duration-300 ${
-            isKeyboardVisible ? 'keyboard-visible shadow-2xl' : 'lg:bg-background/95 lg:backdrop-blur-sm'
+          {/* Chat Input - FIXED position on mobile with enhanced keyboard handling */}
+          <div className={`fixed bottom-0 left-0 right-0 lg:relative lg:bottom-auto lg:left-auto lg:right-auto bg-background/98 backdrop-blur-xl border-t border-border/30 z-40 lg:z-auto transition-all duration-300 safe-area-inset-bottom ${
+            isKeyboardVisible ? 'input-container-keyboard' : 'lg:bg-background/95 lg:backdrop-blur-sm'
           }`}>
             <MessageRevealAnimation delay={300}>
               <ChatInput 

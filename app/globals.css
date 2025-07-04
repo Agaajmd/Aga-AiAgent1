@@ -1136,3 +1136,112 @@
     position: fixed !important;
   }
 }
+
+/* Chat bubble styles */
+.chat-bubble-user {
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.9));
+  color: hsl(var(--primary-foreground));
+  border-radius: 1rem 1rem 0.25rem 1rem;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chat-bubble-user::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: -6px;
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.9));
+  transform: rotate(45deg);
+  border-radius: 0 0 2px 0;
+}
+
+.chat-bubble-ai {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border) / 0.5);
+  border-radius: 1rem 1rem 1rem 0.25rem;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.chat-bubble-ai::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -7px;
+  width: 12px;
+  height: 12px;
+  background: hsl(var(--background));
+  border-left: 1px solid hsl(var(--border) / 0.5);
+  border-bottom: 1px solid hsl(var(--border) / 0.5);
+  transform: rotate(45deg);
+  border-radius: 0 0 0 2px;
+}
+
+.chat-bubble-error {
+  background: hsl(var(--destructive) / 0.1);
+  color: hsl(var(--destructive));
+  border: 1px solid hsl(var(--destructive) / 0.2);
+  border-radius: 1rem 1rem 1rem 0.25rem;
+  position: relative;
+}
+
+.chat-bubble-error::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -7px;
+  width: 12px;
+  height: 12px;
+  background: hsl(var(--destructive) / 0.1);
+  border-left: 1px solid hsl(var(--destructive) / 0.2);
+  border-bottom: 1px solid hsl(var(--destructive) / 0.2);
+  transform: rotate(45deg);
+  border-radius: 0 0 0 2px;
+}
+
+/* Enhanced mobile keyboard positioning */
+@media screen and (max-width: 1023px) {
+  /* Input container when keyboard is active */
+  .input-container-keyboard {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 10000 !important;
+    background: rgba(var(--background), 0.98) !important;
+    backdrop-filter: blur(20px) !important;
+    border-top: 1px solid hsl(var(--border) / 0.3) !important;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.2) !important;
+    padding-bottom: max(env(safe-area-inset-bottom), 16px) !important;
+    transform: translateZ(0) !important; /* Force hardware acceleration */
+  }
+  
+  /* Body when keyboard is active */
+  body.keyboard-active {
+    position: fixed !important;
+    width: 100% !important;
+    top: 0 !important;
+    overflow: hidden !important;
+  }
+  
+  /* Messages adjustment when keyboard is visible */
+  .keyboard-aware-container {
+    transition: padding-bottom 0.2s ease-out;
+  }
+  
+  /* Better scrolling behavior when keyboard is visible */
+  .keyboard-visible-scroll {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  
+  /* Ensure proper stacking */
+  .keyboard-visible {
+    z-index: 9999 !important;
+  }
+}
