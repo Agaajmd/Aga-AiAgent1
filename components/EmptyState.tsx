@@ -39,17 +39,17 @@ const EmptyState: React.FC<EmptyStateProps> = ({ onExampleClick }) => {
       <div className="text-center max-w-lg sm:max-w-2xl animate-slide-up w-full">
         {/* Logo section - Mobile optimized */}
         <div className="relative mb-6 sm:mb-8">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-gradient-to-r from-primary via-primary/80 to-primary/60 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-2xl hover-lift animate-float">
-            <MessageSquare className="w-8 h-8 sm:w-10 sm:h-10 text-primary-foreground" />
+          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-gradient-to-r from-teal via-teal/80 to-mint rounded-xl sm:rounded-2xl flex items-center justify-center shadow-2xl hover-lift animate-float">
+            <MessageSquare className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
           </div>
-          <div className="absolute inset-0 w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-gradient-to-r from-primary/30 to-primary/10 rounded-xl sm:rounded-2xl animate-pulse-slow"></div>
+          <div className="absolute inset-0 w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-gradient-to-r from-teal/30 to-mint/20 rounded-xl sm:rounded-2xl animate-pulse-slow"></div>
           <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-4 h-4 sm:w-6 sm:h-6 bg-green-500 rounded-full flex items-center justify-center animate-bounce-slow">
             <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full"></div>
           </div>
         </div>
 
         {/* Title section - Mobile responsive */}
-        <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3 sm:mb-4 animate-fade-in bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent leading-tight">
+        <h2 className="text-2xl sm:text-3xl font-bold text-teal mb-3 sm:mb-4 animate-fade-in leading-tight">
           Selamat datang di AI Agent Aga
         </h2>
         
@@ -63,13 +63,13 @@ const EmptyState: React.FC<EmptyStateProps> = ({ onExampleClick }) => {
           {features.map((feature, index) => (
             <div 
               key={index}
-              className="group p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-muted/20 to-muted/5 border border-border/30 hover:border-primary/30 transition-all duration-500 hover-lift animate-slide-up"
+              className="group p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-pink/40 to-mint/10 border border-mint/30 hover:border-teal/40 transition-all duration-500 hover-lift animate-slide-up"
               style={{ animationDelay: `${index * 0.15}s` }}
             >
-              <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 bg-primary/10 rounded-lg sm:rounded-xl flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary/20 transition-all duration-300">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 bg-teal/10 rounded-lg sm:rounded-xl flex items-center justify-center text-teal group-hover:scale-110 group-hover:bg-teal/20 transition-all duration-300">
                 {feature.icon}
               </div>
-              <h3 className="font-semibold text-sm sm:text-base text-foreground mb-1 sm:mb-2 group-hover:text-primary transition-colors">
+              <h3 className="font-semibold text-sm sm:text-base text-foreground mb-1 sm:mb-2 group-hover:text-teal transition-colors">
                 {feature.title}
               </h3>
               <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
@@ -89,12 +89,12 @@ const EmptyState: React.FC<EmptyStateProps> = ({ onExampleClick }) => {
               <button
                 key={index}
                 onClick={() => onExampleClick?.(question)}
-                className="group text-left p-3 sm:p-4 rounded-lg sm:rounded-xl bg-gradient-to-r from-background/80 to-muted/20 hover:from-primary/5 hover:to-primary/10 border border-border/30 hover:border-primary/30 transition-all duration-300 hover-lift animate-slide-up text-xs sm:text-sm text-muted-foreground hover:text-foreground touch-manipulation active:scale-95"
+                className="group text-left p-3 sm:p-4 rounded-lg sm:rounded-xl bg-gradient-to-r from-pink/60 to-mint/20 hover:from-teal/5 hover:to-mint/30 border border-mint/30 hover:border-teal/40 transition-all duration-300 hover-lift animate-slide-up text-xs sm:text-sm text-muted-foreground hover:text-teal touch-manipulation active:scale-95 mobile-touch"
                 style={{ animationDelay: `${index * 0.1 + 0.6}s` }}
               >
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-primary/10 rounded-md sm:rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors flex-shrink-0">
-                    <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-teal/10 rounded-md sm:rounded-lg flex items-center justify-center group-hover:bg-teal/20 transition-colors flex-shrink-0">
+                    <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-teal" />
                   </div>
                   <span className="group-hover:translate-x-1 transition-transform duration-300 leading-relaxed">
                     {question}
@@ -106,8 +106,8 @@ const EmptyState: React.FC<EmptyStateProps> = ({ onExampleClick }) => {
         </div>
 
         {/* Mobile tip */}
-        <div className="mt-6 sm:mt-8 p-3 sm:p-4 rounded-lg bg-primary/5 border border-primary/20 animate-fade-in-delayed">
-          <p className="text-xs sm:text-sm text-primary/80 leading-relaxed">
+        <div className="mt-6 sm:mt-8 p-3 sm:p-4 rounded-lg bg-teal/5 border border-teal/20 animate-fade-in-delayed">
+          <p className="text-xs sm:text-sm text-teal/80 leading-relaxed">
             💡 <span className="font-medium">Tips:</span> Ketik pertanyaan Anda di bawah atau pilih salah satu contoh di atas untuk memulai percakapan
           </p>
         </div>

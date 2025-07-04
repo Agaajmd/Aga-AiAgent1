@@ -54,16 +54,16 @@ export function ChatMessage({ message, index = 0 }: ChatMessageProps) {
   }
 
   return (
-    <div className={`group flex w-full ${isUser ? 'justify-end' : 'justify-start'} mb-3 sm:mb-4 animate-fade-in px-3 sm:px-0`}>
-      <div className={`flex ${isUser ? 'flex-row-reverse' : 'flex-row'} gap-2 sm:gap-3 max-w-[90%] sm:max-w-[80%] lg:max-w-[70%]`}>
+    <div className={`group flex w-full ${isUser ? 'justify-end' : 'justify-start'} mb-4 animate-fade-in px-2 sm:px-0`}>
+      <div className={`flex ${isUser ? 'flex-row-reverse' : 'flex-row'} gap-3 max-w-[85%] sm:max-w-[80%] lg:max-w-[70%]`}>
         {/* Avatar - Mobile optimized */}
         <div className="flex-shrink-0">
-          <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${
+          <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${
             isUser 
-              ? 'bg-gradient-to-br from-primary to-primary/80 text-primary-foreground' 
+              ? 'bg-gradient-to-br from-teal to-mint text-white' 
               : message.isError
                 ? 'bg-gradient-to-br from-red-500 to-red-600 text-white'
-                : 'bg-gradient-to-br from-emerald-500 to-emerald-600 text-white'
+                : 'bg-gradient-to-br from-teal to-mint text-white'
           }`}>
             {isUser ? (
               <User className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -73,26 +73,26 @@ export function ChatMessage({ message, index = 0 }: ChatMessageProps) {
           </div>
           {/* Status indicator */}
           {!isUser && !message.isError && (
-            <div className="w-2 h-2 bg-green-400 rounded-full mt-1 ml-6 sm:ml-7 animate-pulse"></div>
+            <div className="w-2 h-2 bg-teal rounded-full mt-1 ml-6 sm:ml-7 animate-pulse"></div>
           )}
         </div>
 
         {/* Message content - Mobile responsive */}
         <div className="flex flex-col min-w-0 flex-1">
-          <div className={`rounded-2xl sm:rounded-3xl px-3 py-2.5 sm:px-4 sm:py-3 shadow-md backdrop-blur-sm border transition-all duration-300 ${
+          <div className={`rounded-2xl px-4 py-3 shadow-md backdrop-blur-sm border transition-all duration-300 mobile-message ${
             isUser
-              ? 'bg-gradient-to-br from-primary to-primary/90 text-primary-foreground border-primary/20' 
+              ? 'bg-gradient-to-br from-teal to-mint text-white border-teal/20' 
               : message.isError
                 ? 'bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800'
-                : 'bg-gradient-to-br from-background/80 to-muted/20 text-foreground border-border/50 hover:border-primary/30'
+                : 'bg-gradient-to-br from-pink/80 to-mint/10 text-foreground border-mint/30 hover:border-teal/30'
           }`}>
             
             {/* Message text with mobile typography */}
             <div className="prose prose-sm sm:prose-base max-w-none text-inherit leading-relaxed">
               {isUser ? (
-                <p className="text-sm sm:text-base font-medium m-0">{message.content}</p>
+                <p className="text-base font-medium m-0">{message.content}</p>
               ) : (
-                <div className="text-sm sm:text-base">
+                <div className="text-base">
                   <TypewriterText 
                     text={message.content} 
                     speed={25} 
@@ -104,17 +104,17 @@ export function ChatMessage({ message, index = 0 }: ChatMessageProps) {
 
             {/* Message actions - Mobile touch friendly */}
             {!isUser && !message.isError && (
-              <div className="flex items-center gap-1 sm:gap-2 mt-2 pt-2 border-t border-border/20">
+              <div className="flex items-center gap-2 mt-3 pt-2 border-t border-mint/20">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={copyToClipboard}
-                  className="h-6 px-2 sm:h-8 sm:px-3 text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-all duration-200 hover:bg-primary/10 touch-manipulation active:scale-95 rounded-lg"
+                  className="h-8 px-3 text-sm text-muted-foreground hover:text-teal transition-all duration-200 hover:bg-teal/10 touch-manipulation active:scale-95 rounded-lg mobile-touch"
                 >
                   {copied ? (
-                    <Check className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                    <Check className="w-4 h-4 text-green-500" />
                   ) : (
-                    <Copy className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <Copy className="w-4 h-4" />
                   )}
                   <span className="ml-1 hidden sm:inline">{copied ? 'Tersalin!' : 'Salin'}</span>
                 </Button>
@@ -123,13 +123,13 @@ export function ChatMessage({ message, index = 0 }: ChatMessageProps) {
                   variant="ghost"
                   size="sm"
                   onClick={handleLike}
-                  className={`h-6 px-2 sm:h-8 sm:px-3 text-xs sm:text-sm transition-all duration-200 hover:bg-primary/10 touch-manipulation active:scale-95 rounded-lg ${
+                  className={`h-8 px-3 text-sm transition-all duration-200 hover:bg-teal/10 touch-manipulation active:scale-95 rounded-lg mobile-touch ${
                     liked 
                       ? 'text-red-500 hover:text-red-600' 
-                      : 'text-muted-foreground hover:text-foreground'
+                      : 'text-muted-foreground hover:text-teal'
                   }`}
                 >
-                  <Heart className={`w-3 h-3 sm:w-4 sm:h-4 transition-all duration-200 ${liked ? 'fill-current scale-110' : ''}`} />
+                  <Heart className={`w-4 h-4 transition-all duration-200 ${liked ? 'fill-current scale-110' : ''}`} />
                   <span className="ml-1 hidden sm:inline">{liked ? 'Disukai' : 'Suka'}</span>
                 </Button>
               </div>
@@ -137,11 +137,11 @@ export function ChatMessage({ message, index = 0 }: ChatMessageProps) {
           </div>
 
           {/* Timestamp - Mobile friendly */}
-          <div className={`text-xs text-muted-foreground/70 mt-1 px-1 ${isUser ? 'text-right' : 'text-left'}`}>
+          <div className={`text-xs text-muted-foreground/70 mt-2 px-1 ${isUser ? 'text-right' : 'text-left'}`}>
             {formatTime(message.timestamp)}
             {!isUser && (
               <span className="ml-2 inline-flex items-center gap-1 opacity-60">
-                <Sparkles className="w-2.5 h-2.5" />
+                <Sparkles className="w-2.5 h-2.5 text-teal" />
                 <span className="hidden sm:inline">AI Agent Aga</span>
                 <span className="sm:hidden">Aga</span>
               </span>

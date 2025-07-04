@@ -59,6 +59,46 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Custom color palette
+        teal: {
+          DEFAULT: "#56DFCF",
+          50: "#e6fffe",
+          100: "#ccfefc",
+          200: "#99fef9",
+          300: "#66fdf6",
+          400: "#33fcf3",
+          500: "#56DFCF",
+          600: "#1fb2a5",
+          700: "#17867b",
+          800: "#0f5a51",
+          900: "#072d28",
+        },
+        mint: {
+          DEFAULT: "#ADEED9",
+          50: "#f0fdf9",
+          100: "#e1fbf3",
+          200: "#c4f6e7",
+          300: "#a6f1db",
+          400: "#89eccf",
+          500: "#ADEED9",
+          600: "#46c9a3",
+          700: "#359177",
+          800: "#24614a",
+          900: "#12301d",
+        },
+        pink: {
+          DEFAULT: "#FFEDF3",
+          50: "#FFEDF3",
+          100: "#ffdce7",
+          200: "#ffb9ce",
+          300: "#ff96b6",
+          400: "#ff739d",
+          500: "#ff5085",
+          600: "#e6476b",
+          700: "#cc3e51",
+          800: "#b33538",
+          900: "#992c1e",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -77,6 +117,9 @@ module.exports = {
         "message-in": "messageIn 0.4s ease-out",
         "pulse-soft": "pulseSoft 2s ease-in-out infinite",
         shimmer: "shimmer 2s linear infinite",
+        "mobile-bounce": "mobileBounce 0.6s ease-out infinite",
+        "mobile-slide-in": "mobileSlideIn 0.3s ease-out",
+        "gentle-float": "gentleFloat 3s ease-in-out infinite",
       },
       keyframes: {
         fadeIn: {
@@ -120,6 +163,18 @@ module.exports = {
         shimmer: {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
+        },
+        mobileBounce: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-3px)" },
+        },
+        mobileSlideIn: {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        gentleFloat: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-2px)" },
         },
       },
       fontFamily: {

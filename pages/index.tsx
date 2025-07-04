@@ -132,13 +132,13 @@ function HomeContent() {
         <link rel="icon" href="/favicon.ico" />
         
         {/* Mobile optimizations */}
-        <meta name="theme-color" content="#3b82f6" />
+        <meta name="theme-color" content="#56DFCF" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="AI Agent Aga" />
       </Head>
 
-      <div className="flex flex-col h-screen bg-gradient-to-br from-background via-background to-muted/20 transition-all duration-500 overflow-hidden">
+      <div className="flex flex-col h-screen bg-gradient-to-br from-pink via-mint/30 to-teal/20 transition-all duration-500 overflow-hidden mobile-first">
         {/* Enhanced Header with mobile optimization */}
         <MessageRevealAnimation delay={0}>
           <Header onClearChat={clearMessages} messageCount={messages.length} />
@@ -147,24 +147,24 @@ function HomeContent() {
         {/* Messages Area with enhanced mobile scrolling */}
         <div 
           ref={chatContainerRef}
-          className="flex-1 overflow-y-auto relative bg-gradient-to-b from-background/50 to-background/80"
+          className="flex-1 overflow-y-auto relative bg-gradient-to-b from-pink/50 to-mint/20 mobile-scroll"
           style={{ 
             WebkitOverflowScrolling: 'touch',
             scrollBehavior: 'smooth'
           }}
         >
           {/* Enhanced background pattern - Mobile optimized */}
-          <div className="absolute inset-0 opacity-[0.02] sm:opacity-[0.03] bg-gradient-to-br from-primary/30 via-transparent to-secondary/30 pointer-events-none"></div>
-          <div className="absolute inset-0 opacity-[0.005] sm:opacity-[0.01] bg-[radial-gradient(circle_at_1px_1px,_rgba(255,255,255,0.3)_1px,_transparent_0)] [background-size:15px_15px] sm:[background-size:20px_20px] pointer-events-none"></div>
+          <div className="absolute inset-0 opacity-[0.02] sm:opacity-[0.03] bg-gradient-to-br from-teal/30 via-transparent to-mint/30 pointer-events-none"></div>
+          <div className="absolute inset-0 opacity-[0.005] sm:opacity-[0.01] bg-[radial-gradient(circle_at_1px_1px,_rgba(86,223,207,0.3)_1px,_transparent_0)] [background-size:15px_15px] sm:[background-size:20px_20px] pointer-events-none"></div>
           
           {/* Content container with mobile padding */}
-          <div className="relative px-3 sm:px-4">
+          <div className="relative px-4 mobile-px">
             {messages.length === 0 ? (
               <MessageRevealAnimation delay={200}>
                 <EmptyState onExampleClick={handleExampleClick} />
               </MessageRevealAnimation>
             ) : (
-              <div className="space-y-2 sm:space-y-3 py-4 sm:py-6">
+              <div className="space-y-3 py-4 sm:py-6 mobile-py">
                 {messages.map((message, index) => (
                   <MessageRevealAnimation key={message.id} delay={index * 50}>
                     <ChatMessage message={message} index={index} />
@@ -181,7 +181,7 @@ function HomeContent() {
             )}
             
             {/* Scroll anchor with mobile spacing */}
-            <div ref={messagesEndRef} className="h-4 sm:h-6" />
+            <div ref={messagesEndRef} className="h-6" />
           </div>
         </div>
 
